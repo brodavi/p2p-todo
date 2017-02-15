@@ -25,3 +25,7 @@ Upon each use, `p2p-todo` will ask you for 3 things:
 3) The database id. You can create and use multiple databases (stored via [level-browserify](https://www.npmjs.com/package/level-browserify)), or optionally enter 'memdb' to use a non-persistent in-memory database ([memdb](https://www.npmjs.com/package/memdb)).
 
 * Hitting 'Cancel' will create/use a level database with id 'default'
+
+### TODO philosophy
+
+Aside from the standard 'done' and 'delete', I have added a 'priority' option. By default, a todo has priority and is featured in the center of the page. If you click the down-arrow, it will become 'de-prioritized'. The idea being that I tend to have too many todo items, and I just want to focus on the top 5 or so. So I would keep all of my todos de-prioritized, and every day just pick the ones I think I can get done by clicking the up-arrow to prioritize them.

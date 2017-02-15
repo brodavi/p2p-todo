@@ -1,0 +1,155 @@
+#inputContainer {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+#todoInput {
+  display: block;
+  font-size: 30px;
+  width: 40%;
+  margin: 0 auto;
+  padding-left: 10px;
+  border-radius: 4px;
+}
+
+/* the 'active' todos live here */
+
+#todoList {
+  width: 50%;
+  min-height: 200px;
+  border: 2px solid #998877;
+  border-radius: 5px;
+  padding: 15px;
+  background-color: #887766;
+  margin: 0 auto;
+}
+
+#todoList .todo-item {
+  display: flex;
+  flex-direction: row;
+
+  font-size: 25px;
+  width: 95%;
+  border: 2px solid #554433;
+  border-radius: 3px;
+  padding: 5px;
+  background-color: #665544;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.todo-text {
+  width: 85%;
+}
+
+.todo-text.done {
+  text-decoration: line-through;
+}
+
+#todoList .todo-item .toggle-done {
+  width: 25px;
+  height: 25px;
+  border: 2px solid #887766;
+  border-radius: 30px;
+  background-color: #998877;
+  margin-right: 10px;
+}
+
+#todoList .todo-item .priority-container {
+  width: 35px;
+  height: 35px;
+  margin-right: 5px;
+}
+
+#todoList .todo-item .toggle-priority {
+  margin-top: 5px;
+  width: 0;
+  height: 0;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-top: 20px solid #FFDDBB;
+}
+
+#todoList .todo-item .delete-todo {
+  padding-right: 5px;
+  padding-left: 5px;
+  font-size: 30px;
+  margin-left: auto;
+}
+
+.delete-todo:hover {
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+/* the 'inactive' todos live here */
+
+#todoListSomeday {
+  margin: 15px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+@keyframes bgcolor {
+    from {background-color: white;}
+    to {background-color: #ccbbaa;}
+}
+
+#todoListSomeday .todo-item {
+  display: flex;
+  flex-direction: row;
+
+  font-size: 15px;
+  width: 200px;
+  border: 1px solid #554433;
+  border-radius: 2px;
+  padding: 2px;
+  background-color: #ccbbaa;
+  margin: 2px;
+  color: #665544;
+  animation-name: bgcolor;
+  animation-duration: 1s;
+}
+
+#todoListSomeday .todo-item .toggle-done {
+  display: none;
+}
+
+#todoListSomeday .todo-item .priority-container {
+  width: 15px;
+  height: 15px;
+  margin-right: 7px;
+  margin-left: 5px;
+}
+
+#todoListSomeday .todo-item .toggle-priority {
+  margin-top: 2px;
+  width: 0; 
+  height: 0; 
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-bottom: 10px solid #DDFFBB;
+}
+
+#todoListSomeday .todo-item .delete-todo {
+  padding-right: 2px;
+  padding-left: 2px;
+  font-size: 15px;
+  margin-left: auto;
+}
+
+#appKey {
+  font-size: 10px;
+  position: absolute;
+  bottom: 10px;
+  right: 20px;
+}
+
+#peerNum {
+  font-size: 10px;
+  position: absolute;
+  bottom: 10px;
+  left: 20px;
+}

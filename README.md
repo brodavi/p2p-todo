@@ -29,3 +29,8 @@ Upon each use, `p2p-todo` will ask you for 3 things:
 ### TODO philosophy
 
 Aside from the standard 'done' and 'delete', I have added a 'priority' option. By default, a todo has priority and is featured in the center of the page. If you click the down-arrow, it will become 'de-prioritized'. The idea being that I tend to have too many todo items, and I just want to focus on the top 5 or so. So I would keep all of my todos de-prioritized, and every day just pick the ones I think I can get done by clicking the up-arrow to prioritize them.
+
+
+### Note on mobile devices
+
+If your mobile device goes to sleep, and the syncing doesn't appear to be working, just reload the browser and you should be up and running again (assuming you chose a persistent database).

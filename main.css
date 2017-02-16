@@ -12,16 +12,28 @@
   border-radius: 4px;
 }
 
+@media all and (max-width: 700px) {
+  #todoInput {
+    width: 90%;
+  }
+}
+
 /* the 'active' todos live here */
 
 #todoList {
-  width: 50%;
+  width: 60%;
   min-height: 200px;
   border: 2px solid #aabbcc;
   border-radius: 5px;
   padding: 15px;
   background-color: #f0f0ff;
   margin: 0 auto;
+}
+
+@media all and (max-width: 800px) {
+  #todoList {
+    width: 90%;
+  }
 }
 
 #todoList .todo-item {
@@ -41,6 +53,7 @@
 
 .todo-text {
   width: 85%;
+  overflow: scroll;
 }
 
 .todo-text.done {
@@ -112,6 +125,12 @@
   color: #998877;
   animation-name: bgcolor;
   animation-duration: 1s;
+}
+
+@media all and (max-width: 450px) {
+  #todoListSomeday .todo-item {
+    width: 90%;
+  }
 }
 
 #todoListSomeday .todo-item .toggle-done {

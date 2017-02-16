@@ -17,10 +17,10 @@
 #todoList {
   width: 50%;
   min-height: 200px;
-  border: 2px solid #998877;
+  border: 2px solid #aabbcc;
   border-radius: 5px;
   padding: 15px;
-  background-color: #887766;
+  background-color: #f0f0ff;
   margin: 0 auto;
 }
 
@@ -30,10 +30,11 @@
 
   font-size: 25px;
   width: 95%;
-  border: 2px solid #554433;
+  border: 2px solid #ddeeff;
   border-radius: 3px;
   padding: 5px;
-  background-color: #665544;
+  background-color: #ffffff;
+  color: #554433;
   margin-top: 5px;
   margin-bottom: 5px;
 }
@@ -49,9 +50,9 @@
 #todoList .todo-item .toggle-done {
   width: 25px;
   height: 25px;
-  border: 2px solid #887766;
+  border: 2px solid #aabbcc;
   border-radius: 30px;
-  background-color: #998877;
+  background-color: #f0f0ff;
   margin-right: 10px;
 }
 
@@ -67,7 +68,7 @@
   height: 0;
   border-left: 15px solid transparent;
   border-right: 15px solid transparent;
-  border-top: 20px solid #FFDDBB;
+  border-top: 20px solid #aabbcc;
 }
 
 #todoList .todo-item .delete-todo {
@@ -93,8 +94,8 @@
 }
 
 @keyframes bgcolor {
-    from {background-color: white;}
-    to {background-color: #ccbbaa;}
+    from {background-color: #ffccaa;}
+    to {background-color: #fffffe;}
 }
 
 #todoListSomeday .todo-item {
@@ -106,9 +107,9 @@
   border: 1px solid #554433;
   border-radius: 2px;
   padding: 2px;
-  background-color: #ccbbaa;
+  background-color: #fffffe;
   margin: 2px;
-  color: #665544;
+  color: #998877;
   animation-name: bgcolor;
   animation-duration: 1s;
 }
@@ -140,16 +141,16 @@
   margin-left: auto;
 }
 
-#appKey {
+#appInfo {
   font-size: 10px;
-  position: absolute;
+  position: fixed;
   bottom: 10px;
   right: 20px;
 }
 
 #peerNum {
   font-size: 10px;
-  position: absolute;
+  position: fixed;
   bottom: 10px;
   left: 20px;
 }

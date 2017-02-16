@@ -12,9 +12,15 @@ Or you can serve the files locally or on a server with any web server (though if
 
 ### Usage
 
-Upon each use, `p2p-todo` will ask you for 3 things:
+Options: along with pointing your browser to `p2p-todo`, whether served somewhere or from your local file system, it is convenient to add additional options to the url. For instance, if you are pointing to a downloaded single file version, an example url would be:
 
-1) The url of a signalling server ([signalhub](http://npmjs.org/package/signalhub))
+file:///home/brodavi/downloads/p2ptodo.html?signalhub=https://signalhub.mafintosh.com&key=test&db=shopping
+
+Here you can see I have specified the signalling server `https://signalhub.mafintosh.com`, the app key `test`, and the db id `shopping`
+
+If you don't specify the options in the url, then `p2p-todo` will ask you for those 3 things:
+
+1) The url of a signalling / [signalhub](http://npmjs.org/package/signalhub) server
 
 * Hitting 'Cancel' will select a default signalling server (https://signalhub.mafintosh.com)
 
@@ -22,7 +28,7 @@ Upon each use, `p2p-todo` will ask you for 3 things:
 
 * Hitting 'Cancel' will generate a random number as a key (it is displayed in the lower right corner if you need it later)
 
-3) The database id. You can create and use multiple databases (stored via [level-browserify](https://www.npmjs.com/package/level-browserify)), or optionally enter 'memdb' to use a non-persistent in-memory database ([memdb](https://www.npmjs.com/package/memdb)).
+3) The database id. You can create and use multiple databases (stored via [level-browserify](https://www.npmjs.com/package/level-browserify)), or optionally enter 'memdb' to use a non-persistent in-memory database ([memdb](https://www.npmjs.com/package/memdb)). This is also displayed in the lower right corner if you need it later.
 
 * Hitting 'Cancel' will create/use a level database with id 'default'
 

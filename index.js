@@ -1,6 +1,7 @@
 var level = require('level-browserify')
 var memdb = require('memdb')
 var swarmlog = require('unsigned-swarmlog')
+var queryString = require('query-string')
 
 // from http://stackoverflow.com/questions/9407892/how-to-generate-random-sha1-hash-to-use-as-id-in-node-js#14869745
 // str byteToHex(uint8 byte)
@@ -23,30 +24,41 @@ function generateId (len) {
 
 
 
-var user = {}
+var searchObj = queryString.parse(window.location.search)
 
-user.signalhub = window.prompt('Enter a signaling server for peer discovery or hit Cancel for default.') || 'https://signalhub.mafintosh.com'
+var signalhub, key, db
 
-user.key = window.prompt('Enter an app key for sharing via p2p or hit Cancel.') || (Math.ceil(Math.random()*100000000000)).toString()
+if (!searchObj.signalhub) {
+  signalhub = window.prompt('Enter a signaling server for peer discovery or hit Cancel for default.') || 'https://signalhub.mafintosh.com'
+} else {
+  signalhub = searchObj.signalhub
+}
 
-user.db = window.prompt('Specify a persistant database id, "memdb" to use disposable in-memory database, or hit Cancel for default persistant database.') || 'default'
+if (!searchObj.key) {
+  key = window.prompt('Enter an app key for sharing via p2p or hit Cancel.') || (Math.ceil(Math.random()*100000000000)).toString()
+} else {
+  key = searchObj.key
+}
 
-// var hub = signalhub(user.key, [user.signalhub])
-// var swarm = webrtcSwarm(hub)
+if (!searchObj.db) {
+  var prompt = window.prompt('Specify a persistant database id, "memdb" to use disposable in-memory database, or hit Cancel for default persistant database.') || 'default'
+  db = prompt === 'memdb' ? memdb() : level(prompt)
+} else {
+  db = searchObj.db === 'memdb' ? memdb() : level(searchObj.db)
+}
 
-var db = user.db === 'memdb' ? memdb() : level(user.db)
-// var log = hyperlog(db)
+console.log(signalhub, key, prompt || searchObj.db)
 
 var log = swarmlog({
   db: db,
-  topic: user.key,
+  topic: 'p2p-todo.' + key,
   valueEncoding: 'json',
-  hubs: [ user.signalhub ]
+  hubs: [ signalhub ]
 })
 
 window.onload = function () {
   // notify user of current app key in bottom right of screen
-  appKey.innerHTML = 'app key: ' + user.key
+  appInfo.innerHTML = 'app key: ' + key + ' | db id: ' + (prompt || searchObj.db)
 
   // handle the creation of a todo with the input field
   todoInput.addEventListener('keyup', handleCreateTodo)

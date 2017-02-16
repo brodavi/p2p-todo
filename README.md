@@ -6,15 +6,17 @@ Built on top of [webrtc-swarm](http://npmjs.org/package/webrtc-swarm), and [hype
 
 ### Installation
 
-You can download `p2ptodo.html`, which includes everything, and you can place it on your hardrive (or in your filesystem on your mobile device), point your browser at the file, and you're ready to go.
+You can download `p2ptodo.html` [here](https://github.com/brodavi/p2p-todo/raw/master/p2ptodo.html), which includes everything, and you can place it on your hardrive (or in your filesystem on your mobile device), point your browser at the file, and you're ready to go.
 
-Or you can serve the files locally or on a server with any web server (though if you are off-line, it would be difficult to reach your todo list!)
+Or you can clone this repo and serve the files locally or on a server with any web server (though if you are off-line, it would be difficult to reach your todo list!)
+
+If anyone is interested, I use [inliner](https://www.npmjs.com/package/inliner) to build `p2ptodo.html`.
 
 ### Usage
 
 Options: along with pointing your browser to `p2p-todo`, whether served somewhere or from your local file system, it is convenient to add additional options to the url. For instance, if you are pointing to a downloaded single file version, an example url would be:
 
-file:///home/brodavi/downloads/p2ptodo.html?signalhub=https://signalhub.mafintosh.com&key=test&db=shopping
+`file:///home/brodavi/downloads/p2ptodo.html?signalhub=https://signalhub.mafintosh.com&key=test&db=shopping`
 
 Here you can see I have specified the signalling server `https://signalhub.mafintosh.com`, the app key `test`, and the db id `shopping`
 
@@ -35,7 +37,6 @@ If you don't specify the options in the url, then `p2p-todo` will ask you for th
 ### TODO philosophy
 
 Aside from the standard 'done' and 'delete', I have added a 'priority' option. By default, a todo has priority and is featured in the center of the page. If you click the down-arrow, it will become 'de-prioritized'. The idea being that I tend to have too many todo items, and I just want to focus on the top 5 or so. So I would keep all of my todos de-prioritized, and every day just pick the ones I think I can get done by clicking the up-arrow to prioritize them.
-
 
 ### Note on mobile devices
 

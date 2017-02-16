@@ -14698,13 +14698,13 @@ module.exports={
         "spec": ">=6.0.0 <7.0.0",
         "type": "range"
       },
-      "/home/brodavi/.nvm/versions/node/v6.9.0/lib/node_modules/watchify/node_modules/browserify-sign"
+      "/home/brodavi/.nvm/versions/node/v6.9.0/lib/node_modules/browserify/node_modules/browserify-sign"
     ]
   ],
   "_from": "elliptic@>=6.0.0 <7.0.0",
   "_id": "elliptic@6.3.3",
   "_inCache": true,
-  "_location": "/watchify/elliptic",
+  "_location": "/browserify/elliptic",
   "_nodeVersion": "7.0.0",
   "_npmOperationalInternal": {
     "host": "packages-18-east.internal.npmjs.com",
@@ -14726,14 +14726,14 @@ module.exports={
     "type": "range"
   },
   "_requiredBy": [
-    "/watchify/browserify-sign",
-    "/watchify/create-ecdh"
+    "/browserify/browserify-sign",
+    "/browserify/create-ecdh"
   ],
   "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-6.3.3.tgz",
   "_shasum": "5482d9646d54bcb89fd7d994fc9e2e9568876e3f",
   "_shrinkwrap": null,
   "_spec": "elliptic@^6.0.0",
-  "_where": "/home/brodavi/.nvm/versions/node/v6.9.0/lib/node_modules/watchify/node_modules/browserify-sign",
+  "_where": "/home/brodavi/.nvm/versions/node/v6.9.0/lib/node_modules/browserify/node_modules/browserify-sign",
   "author": {
     "name": "Fedor Indutny",
     "email": "fedor@indutny.com"
@@ -21825,7 +21825,7 @@ if (!searchObj.key) {
 }
 
 if (!searchObj.db) {
-  var prompt = window.prompt('Specify a persistant database id, "memdb" to use disposable in-memory database, or hit Cancel for default persistant database.') || 'default'
+  var prompt = window.prompt('Specify a persistent database id, "memdb" to use disposable in-memory database, or hit Cancel for default persistent database.') || 'default'
   db = prompt === 'memdb' ? memdb() : level(prompt)
 } else {
   db = searchObj.db === 'memdb' ? memdb() : level(searchObj.db)
@@ -22418,8 +22418,8 @@ module.exports.AbstractLevelDOWN    = AbstractLevelDOWN
 module.exports.AbstractIterator     = AbstractIterator
 module.exports.AbstractChainedBatch = AbstractChainedBatch
 
-}).call(this,{"isBuffer":require("../../../../../../../home/brodavi/.nvm/versions/node/v6.9.0/lib/node_modules/watchify/node_modules/is-buffer/index.js")},require('_process'))
-},{"../../../../../../../home/brodavi/.nvm/versions/node/v6.9.0/lib/node_modules/watchify/node_modules/is-buffer/index.js":92,"./abstract-chained-batch":140,"./abstract-iterator":141,"_process":104,"xtend":143}],143:[function(require,module,exports){
+}).call(this,{"isBuffer":require("../../../../../../../home/brodavi/.nvm/versions/node/v6.9.0/lib/node_modules/browserify/node_modules/is-buffer/index.js")},require('_process'))
+},{"../../../../../../../home/brodavi/.nvm/versions/node/v6.9.0/lib/node_modules/browserify/node_modules/is-buffer/index.js":92,"./abstract-chained-batch":140,"./abstract-iterator":141,"_process":104,"xtend":143}],143:[function(require,module,exports){
 module.exports = extend
 
 function extend() {
@@ -22659,8 +22659,8 @@ function objectToString(o) {
   return Object.prototype.toString.call(o);
 }
 
-}).call(this,{"isBuffer":require("../../../../../../../../home/brodavi/.nvm/versions/node/v6.9.0/lib/node_modules/watchify/node_modules/is-buffer/index.js")})
-},{"../../../../../../../../home/brodavi/.nvm/versions/node/v6.9.0/lib/node_modules/watchify/node_modules/is-buffer/index.js":92}],148:[function(require,module,exports){
+}).call(this,{"isBuffer":require("../../../../../../../../home/brodavi/.nvm/versions/node/v6.9.0/lib/node_modules/browserify/node_modules/is-buffer/index.js")})
+},{"../../../../../../../../home/brodavi/.nvm/versions/node/v6.9.0/lib/node_modules/browserify/node_modules/is-buffer/index.js":92}],148:[function(require,module,exports){
 /**
  * cuid.js
  * Collision-resistant UID generator for browsers and node.
@@ -23257,8 +23257,8 @@ DeferredLevelDOWN.prototype._iterator = function (options) {
 module.exports                  = DeferredLevelDOWN
 module.exports.DeferredIterator = DeferredIterator
 
-}).call(this,{"isBuffer":require("../../../../../../../home/brodavi/.nvm/versions/node/v6.9.0/lib/node_modules/watchify/node_modules/is-buffer/index.js")},require('_process'))
-},{"../../../../../../../home/brodavi/.nvm/versions/node/v6.9.0/lib/node_modules/watchify/node_modules/is-buffer/index.js":92,"./deferred-iterator":151,"_process":104,"abstract-leveldown":156,"util":137}],153:[function(require,module,exports){
+}).call(this,{"isBuffer":require("../../../../../../../home/brodavi/.nvm/versions/node/v6.9.0/lib/node_modules/browserify/node_modules/is-buffer/index.js")},require('_process'))
+},{"../../../../../../../home/brodavi/.nvm/versions/node/v6.9.0/lib/node_modules/browserify/node_modules/is-buffer/index.js":92,"./deferred-iterator":151,"_process":104,"abstract-leveldown":156,"util":137}],153:[function(require,module,exports){
 (function (process){
 /* Copyright (c) 2013 Rod Vagg, MIT License */
 
@@ -23618,8 +23618,8 @@ AbstractLevelDOWN.prototype._checkKey = function (obj, type) {
 
 module.exports = AbstractLevelDOWN
 
-}).call(this,{"isBuffer":require("../../../../../../../../../home/brodavi/.nvm/versions/node/v6.9.0/lib/node_modules/watchify/node_modules/is-buffer/index.js")},require('_process'))
-},{"../../../../../../../../../home/brodavi/.nvm/versions/node/v6.9.0/lib/node_modules/watchify/node_modules/is-buffer/index.js":92,"./abstract-chained-batch":153,"./abstract-iterator":154,"_process":104,"xtend":158}],156:[function(require,module,exports){
+}).call(this,{"isBuffer":require("../../../../../../../../../home/brodavi/.nvm/versions/node/v6.9.0/lib/node_modules/browserify/node_modules/is-buffer/index.js")},require('_process'))
+},{"../../../../../../../../../home/brodavi/.nvm/versions/node/v6.9.0/lib/node_modules/browserify/node_modules/is-buffer/index.js":92,"./abstract-chained-batch":153,"./abstract-iterator":154,"_process":104,"xtend":158}],156:[function(require,module,exports){
 exports.AbstractLevelDOWN    = require('./abstract-leveldown')
 exports.AbstractIterator     = require('./abstract-iterator')
 exports.AbstractChainedBatch = require('./abstract-chained-batch')
@@ -32432,8 +32432,8 @@ exports.filter = function (range, compare) {
 
 
 
-}).call(this,{"isBuffer":require("../../../../../../../home/brodavi/.nvm/versions/node/v6.9.0/lib/node_modules/watchify/node_modules/is-buffer/index.js")})
-},{"../../../../../../../home/brodavi/.nvm/versions/node/v6.9.0/lib/node_modules/watchify/node_modules/is-buffer/index.js":92}],249:[function(require,module,exports){
+}).call(this,{"isBuffer":require("../../../../../../../home/brodavi/.nvm/versions/node/v6.9.0/lib/node_modules/browserify/node_modules/is-buffer/index.js")})
+},{"../../../../../../../home/brodavi/.nvm/versions/node/v6.9.0/lib/node_modules/browserify/node_modules/is-buffer/index.js":92}],249:[function(require,module,exports){
 var levelup = require('levelup');
 var memdown = require('memdown');
 
@@ -32692,7 +32692,7 @@ arguments[4][153][0].apply(exports,arguments)
 arguments[4][141][0].apply(exports,arguments)
 },{"_process":104,"dup":141}],254:[function(require,module,exports){
 arguments[4][155][0].apply(exports,arguments)
-},{"../../../../../../../../../home/brodavi/.nvm/versions/node/v6.9.0/lib/node_modules/watchify/node_modules/is-buffer/index.js":92,"./abstract-chained-batch":252,"./abstract-iterator":253,"_process":104,"dup":155,"xtend":257}],255:[function(require,module,exports){
+},{"../../../../../../../../../home/brodavi/.nvm/versions/node/v6.9.0/lib/node_modules/browserify/node_modules/is-buffer/index.js":92,"./abstract-chained-batch":252,"./abstract-iterator":253,"_process":104,"dup":155,"xtend":257}],255:[function(require,module,exports){
 arguments[4][156][0].apply(exports,arguments)
 },{"./abstract-chained-batch":252,"./abstract-iterator":253,"./abstract-leveldown":254,"./is-leveldown":256,"dup":156}],256:[function(require,module,exports){
 arguments[4][157][0].apply(exports,arguments)
@@ -34926,8 +34926,8 @@ module.exports = function (proto, opts) {
   return new Messages()
 }
 
-}).call(this,{"isBuffer":require("../../../../../../../home/brodavi/.nvm/versions/node/v6.9.0/lib/node_modules/watchify/node_modules/is-buffer/index.js")})
-},{"../../../../../../../home/brodavi/.nvm/versions/node/v6.9.0/lib/node_modules/watchify/node_modules/is-buffer/index.js":92,"./compile":273,"protocol-buffers-schema":269}],276:[function(require,module,exports){
+}).call(this,{"isBuffer":require("../../../../../../../home/brodavi/.nvm/versions/node/v6.9.0/lib/node_modules/browserify/node_modules/is-buffer/index.js")})
+},{"../../../../../../../home/brodavi/.nvm/versions/node/v6.9.0/lib/node_modules/browserify/node_modules/is-buffer/index.js":92,"./compile":273,"protocol-buffers-schema":269}],276:[function(require,module,exports){
 arguments[4][175][0].apply(exports,arguments)
 },{"dup":175}],277:[function(require,module,exports){
 var once = require('once')

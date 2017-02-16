@@ -41,7 +41,7 @@ if (!searchObj.key) {
 }
 
 if (!searchObj.db) {
-  var prompt = window.prompt('Specify a persistant database id, "memdb" to use disposable in-memory database, or hit Cancel for default persistant database.') || 'default'
+  var prompt = window.prompt('Specify a persistent database id, "memdb" to use disposable in-memory database, or hit Cancel for default persistent database.') || 'default'
   db = prompt === 'memdb' ? memdb() : level(prompt)
 } else {
   db = searchObj.db === 'memdb' ? memdb() : level(searchObj.db)

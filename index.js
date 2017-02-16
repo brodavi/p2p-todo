@@ -1,9 +1,6 @@
 var level = require('level-browserify')
 var memdb = require('memdb')
-var webrtcSwarm = require('webrtc-swarm')
-var signalhub = require('signalhub')
-var hyperlog = require('hyperlog')
-var utostring = require('./utf.js')
+var swarmlog = require('unsigned-swarmlog')
 
 // from http://stackoverflow.com/questions/9407892/how-to-generate-random-sha1-hash-to-use-as-id-in-node-js#14869745
 // str byteToHex(uint8 byte)
@@ -34,11 +31,18 @@ user.key = window.prompt('Enter an app key for sharing via p2p or hit Cancel.') 
 
 user.db = window.prompt('Specify a persistant database id, "memdb" to use disposable in-memory database, or hit Cancel for default persistant database.') || 'default'
 
-var hub = signalhub(user.key, [user.signalhub])
-var swarm = webrtcSwarm(hub)
+// var hub = signalhub(user.key, [user.signalhub])
+// var swarm = webrtcSwarm(hub)
 
 var db = user.db === 'memdb' ? memdb() : level(user.db)
-var log = hyperlog(db)
+// var log = hyperlog(db)
+
+var log = swarmlog({
+  db: db,
+  topic: user.key,
+  valueEncoding: 'json',
+  hubs: [ user.signalhub ]
+})
 
 window.onload = function () {
   // notify user of current app key in bottom right of screen
@@ -47,10 +51,9 @@ window.onload = function () {
   // handle the creation of a todo with the input field
   todoInput.addEventListener('keyup', handleCreateTodo)
 
-  swarm.on('peer', function (peer) {
+  log.swarm.on('peer', function (peer) {
     console.log('got peer: ', peer)
     peerNum.innerHTML = '# of peers: (' + swarm.peers.length + ')'
-    peer.pipe(log.replicate({live: true})).pipe(peer)
   })
 
   log.createReadStream({live: true})
@@ -62,25 +65,23 @@ window.onload = function () {
 // note that "remote" in this case means from the hyperlog.
 // we might have appended to the hyperlog ourselves, but we don't want to care.
 function handleRemoteData (data) {
-  var datastring = utostring(data.value)
-  var obj = JSON.parse(datastring)
-  console.log('remote data: ', obj)
+  console.log('remote data: ', data)
 
-  if (obj.action === 'create-todo') {
-    remoteCreateTodo(obj.value)
-  } else if (obj.action === 'delete-todo') {
-    remoteDeleteTodo(obj.value.id)
-  } else if (obj.action === 'update-todo') {
-    remoteUpdateTodo(obj.value)
+  if (data.value.action === 'create-todo') {
+    remoteCreateTodo(data.value.value)
+  } else if (data.value.action === 'delete-todo') {
+    remoteDeleteTodo(data.value.value.id)
+  } else if (data.value.action === 'update-todo') {
+    remoteUpdateTodo(data.value.value)
   }
 }
 
 // user wants to create a todo. append this action to the hyperlog
 function handleCreateTodo (e) {
   if (e.keyCode === 13) {
-    
+
     // append the action to the hyperlog
-    log.append(JSON.stringify({
+    log.append({
       action: 'create-todo',
       value: {
         id: generateId(),
@@ -88,8 +89,8 @@ function handleCreateTodo (e) {
         done: false,
         prioritized: true
       }
-    }))
-    
+    })
+
     // clear the input field
     todoInput.value = ''
   }
@@ -101,13 +102,13 @@ function handleTogglePriority (e) {
   var id = todo.dataset.id
 
   // append the action to the hyperlog
-  log.append(JSON.stringify({
+  log.append({
     action: 'update-todo',
     value: {
       id: id,
       prioritized: todo.parentElement === todoList ? false : true
     }
-  }))
+  })
 
   return true
 }
@@ -125,13 +126,13 @@ function handleToggleDone (e) {
   }
 
   // append the action to the hyperlog
-  log.append(JSON.stringify({
+  log.append({
     action: 'update-todo',
     value: {
       id: todo.dataset.id,
       done: textEl.classList.contains('done') ? false : true
     }
-  }))
+  })
 
   return true
 }
@@ -141,12 +142,12 @@ function handleDeleteTodo (e) {
   var id = e.target.parentElement.dataset.id
 
   // append the action to the hyperlog
-  log.append(JSON.stringify({
+  log.append({
     action: 'delete-todo',
     value: {
       id: id
     }
-  }))
+  })
 
   return true
 }

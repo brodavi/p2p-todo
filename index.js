@@ -53,7 +53,7 @@ window.onload = function () {
 
   log.swarm.on('peer', function (peer) {
     console.log('got peer: ', peer)
-    peerNum.innerHTML = '# of peers: (' + swarm.peers.length + ')'
+    peerNum.innerHTML = '# of peers: (' + log.swarm.peers.length + ')'
   })
 
   log.createReadStream({live: true})

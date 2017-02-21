@@ -1,3 +1,7 @@
+textarea {
+  resize: none;
+}
+
 #inputContainer {
   margin-top: 20px;
   margin-bottom: 20px;
@@ -16,6 +20,18 @@
   #todoInput {
     width: 90%;
   }
+}
+
+.instructions {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 10px;
+  color: #222222;
+}
+
+.instructions .action {
+  color: #5555ff;
+  cursor: pointer;
 }
 
 /* the 'active' todos live here */
@@ -53,7 +69,7 @@
 
 .todo-text {
   width: 85%;
-  overflow: scroll;
+  overflow: auto;
 }
 
 .todo-text.done {
@@ -160,7 +176,7 @@
   margin-left: auto;
 }
 
-#appInfo {
+#appInfoSpan {
   font-size: 10px;
   position: fixed;
   bottom: 10px;
@@ -172,4 +188,33 @@
   position: fixed;
   bottom: 10px;
   left: 20px;
+}
+
+#importBtn {
+  position: fixed;
+  top: 15px;
+  right: 60px;
+  background-color: #88ff44;
+  z-index: 99999;
+}
+
+#closeBtn {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  background-color: #ff8844;
+  z-index: 99999;
+}
+
+.jsonTextArea {
+  position: fixed;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  background-color: #ccaaff;
+  color: #332211;
+}
+
+.hidden {
+  display: none;
 }

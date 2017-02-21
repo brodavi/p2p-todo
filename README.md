@@ -34,6 +34,12 @@ If you don't specify the options in the url, then `p2p-todo` will ask you for th
 
 * Hitting 'Cancel' will create/use a level database with id 'default'
 
+Once the app is running, there is a link in the lower right hand corner. You can use this link to create another instance of the app or use it as a bookmark.
+
+### Import / Export
+
+If you ever get tired of the entire history of your todo list being re-played every time you open the app, you can use the "export" and "import" buttons. "export" will open a textare with a JSON representation of your todos. You can copy this text, and in a new app id, use the "import" button to paste the text, importing the current todo list. This effectively "forgets" everything before this version of reality.
+
 ### TODO philosophy
 
 Aside from the standard 'done' and 'delete', I have added a 'priority' option. By default, a todo has priority and is featured in the center of the page. If you click the down-arrow, it will become 'de-prioritized'. The idea being that I tend to have too many todo items, and I just want to focus on the top 5 or so. So I would keep all of my todos de-prioritized, and every day just pick the ones I think I can get done by clicking the up-arrow to prioritize them.

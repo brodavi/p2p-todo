@@ -11,14 +11,21 @@
   </head>
   <body>
     <div id="inputContainer">
-      <input type="text" id="todoInput" placeholder="new todo">
+      <textarea id="todoInput" placeholder="new todo"></textarea>
+      <div class="instructions">
+        ctrl-enter to add new line, enter to add todo. <button class="action" id="openExportBtn">export</button> to export your todos to JSON. <button class="action" id="openImportBtn">import</button> your todos via JSON.
+      </div>
     </div>
     <div id="todoListContainer">
       <div id="todoList"></div>
     </div>
     <div id="todoListSomeday">
     </div>
-    <div id="appInfo"></div>
+    <span id="appInfoSpan" class="instructions">copy this link to replicate this app: <a id="appInfo"></a></span>
     <div id="peerNum"># of peers: (0)</div>
+    <button id="importBtn" class="hidden">import</button>
+    <button id="closeBtn" class="hidden">x</button>
+    <textarea id="jsonExport" class="jsonTextArea hidden" rows="8" cols="40"></textarea>
+    <textarea id="jsonImport" class="jsonTextArea hidden" rows="8" cols="40"></textarea>
   <body>
 </html>

@@ -122,11 +122,46 @@ function handleRemoteData (data) {
   console.log('remote data: ', data)
 
   if (data.value.action === 'create-todo') {
+
+    // create a todo object
+    var todo = {
+      id: data.value.value.id,
+      text: data.value.value.text,
+      done: false,
+      prioritized: true
+    }
+
+    // add todo to the app state object
+    todos.push(todo)
+
+    // then do the dom addition
     remoteCreateTodo(data.value.value)
+
   } else if (data.value.action === 'delete-todo') {
+
+    // remove it from app state object
+    var todo = todos.find(function (t) {return t.id === data.value.value.id})
+    var idx = todos.indexOf(todo)
+    todos.splice(idx, 1)
+
+    // then do the dom removal
     remoteDeleteTodo(data.value.value.id)
+
   } else if (data.value.action === 'update-todo') {
+
+    // update it from the app state object
+    var todo = todos.find(function (t) {return t.id === data.value.value.id})
+    if (data.value.value.hasOwnProperty('prioritized')) {
+      todo.prioritized = data.value.value.prioritized
+    } else if (data.value.value.hasOwnProperty('done')) {
+      todo.done = data.value.value.done
+    } else if (data.value.value.hasOwnProperty('text')) {
+      todo.text = data.value.value.text
+    }
+
+    // then do the dom update
     remoteUpdateTodo(data.value.value)
+
   }
 }
 
@@ -333,5 +368,14 @@ function remoteUpdateTodo (opts) {
     } else {
       textEl.classList.remove('done')
     }
+  } else if (opts.hasOwnProperty('text')) {
+    var textEl
+    for (var x = 0; x < todo.children.length; x++) {
+      if (todo.children[x].classList.contains('todo-text')) {
+        textEl = todo.children[x]
+        break
+      }
+    }
+    textEl.value = opts.text
   }
 }

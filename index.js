@@ -1,30 +1,14 @@
-var level = require('level-browserify')
-var memdb = require('memdb')
-var swarmlog = require('unsigned-swarmlog')
-var queryString = require('query-string')
+const level = require('level-browserify')
+const memdb = require('memdb')
+const swarmlog = require('unsigned-swarmlog')
+const queryString = require('query-string')
+const extend = require('xtend')
+const choo = require('choo')
+const html = require('choo/html')
+const app = choo()
+const utils = require('./utils.js')
 
-// from http://stackoverflow.com/questions/9407892/how-to-generate-random-sha1-hash-to-use-as-id-in-node-js#14869745
-// str byteToHex(uint8 byte)
-//   converts a single byte to a hex string 
-function byteToHex (byte) {
-  return ('0' + byte.toString(16)).slice(-2)
-}
-
-// from http://stackoverflow.com/questions/9407892/how-to-generate-random-sha1-hash-to-use-as-id-in-node-js#14869745
-// str generateId(int len);
-//   len - must be an even number (default: 40)
-function generateId (len) {
-  var arr = new Uint8Array((len || 40) / 2)
-  window.crypto.getRandomValues(arr)
-  return [].map.call(arr, byteToHex).join("")
-}
-
-
-
-
-
-
-var searchObj = queryString.parse(window.location.search)
+const searchObj = queryString.parse(window.location.search)
 
 var signalhub, key, db
 
@@ -49,333 +33,238 @@ if (!searchObj.db) {
 
 console.log(signalhub, key, prompt || searchObj.db)
 
-var log = swarmlog({
+const log = swarmlog({
   db: db,
   topic: 'p2p-todo.' + key,
   valueEncoding: 'json',
   hubs: [ signalhub ]
 })
 
-var todos = []
+function handleRemoteData (state, data, send, done) {
+  if (data.log === log.id) {
+    return
+  }
 
-window.onload = function () {
-  // notify user of current app key in bottom right of screen
-  appInfo.innerHTML = 'signalhub: "' + signalhub + '" | app key: "' + key + '" | db id: "' + (prompt || searchObj.db) + '"'
-  appInfo.href = window.location.href + '?signalhub=' + signalhub + '&key=' + key + '&db=' + (prompt || searchObj.db)
+         if (data.value.action === 'create-todo') {
+    send('remoteAddTodo', data.value.value, done)
+  } else if (data.value.action === 'delete-todo') {
+    send('remoteDeleteTodo', data.value.value, done)
+  } else if (data.value.action === 'update-todo') {
+    send('remoteUpdateTodo', data.value.value, done)
+  }
+}
 
-  // handle the creation of a todo with the input field
-  todoInput.addEventListener('keyup', handleCreateTodo)
-
-  log.swarm.on('peer', function (peer) {
-    console.log('got peer: ', peer)
-    peerNum.innerHTML = '# of peers: (' + log.swarm.peers.length + ')'
-  })
-
-  log.createReadStream({live: true})
-  .on('data', function (data) {
-    handleRemoteData(data)
-  })
-
-  openExportBtn.addEventListener('click', function () {
-    closeBtn.classList.remove('hidden')
-    jsonExport.classList.remove('hidden')
-    jsonExport.innerHTML = JSON.stringify({todos: todos})
-  })
-
-  openImportBtn.addEventListener('click', function () {
-    closeBtn.classList.remove('hidden')
-    importBtn.classList.remove('hidden')
-    jsonImport.classList.remove('hidden')
-  })
-
-  importBtn.addEventListener('click', function () {
-
-    // set the imported todos to the app state object
-    var importedTodos = JSON.parse(jsonImport.value).todos
-
-    // and update the hyperlog
-    for (var x = 0; x < importedTodos.length; x++) {
-      todos.push(importedTodos[x])
+app.model({
+  state: {
+    todos: [],
+    peerNum: 0,
+    importVisible: false,
+    exportVisible: false
+  },
+  reducers: {
+    receiveNewTodo: (state, newTodo) => {
+      const newTodos = state.todos.slice()
+      newTodos.push(newTodo)
+      return { todos: newTodos }
+    },
+    replaceTodo: (state, newTodo) => {
+      const newTodos = state.todos.slice()
+      const oldTodo = state.todos.find(function (t) { return t.id === newTodo.id })
+      const idx = state.todos.indexOf(oldTodo)
+      newTodos[idx] = newTodo
+      return { todos: newTodos }
+    },
+    removeTodo: (state, id) => {
+      const newTodos = state.todos.filter(todo => todo.id !== id)
+      return { todos: newTodos }
+    },
+    peerNum: (state, num) => {
+      return { peerNum: num }
+    },
+    toggleImport: (state) => {
+      return { importVisible: !state.importVisible }
+    },
+    toggleExport: (state) => {
+      return { exportVisible: !state.exportVisible }
+    },
+    closeImportExport: (state) => {
+      return { exportVisible: false, importVisible: false }
+    }
+  },
+  effects: {
+    init: (state, data, send, done) => {
+      log.createReadStream({ live: true })
+      .on('data', function (logdata) {
+        handleRemoteData(state, logdata, send, done)
+      })
+      log.swarm.on('peer', function (peer) {
+        send('peerNum', log.swarm.peers.length, done)
+      })
+    },
+    remoteAddTodo: (state, data, send, done) => {
+      send('receiveNewTodo', data, done)
+    },
+    addTodo: (state, data, send, done) => {
+      send('receiveNewTodo', data, done)
       log.append({
         action: 'create-todo',
-        value: importedTodos[x]
+        value: data
+      })
+    },
+    remoteUpdateTodo: (state, data, send, done) => {
+      const oldTodo = state.todos.find(function (t) { return t.id === data.id })
+      const newTodo = extend(oldTodo, data)
+      send('replaceTodo', newTodo, done)
+    },
+    updateTodo: (state, data, send, done) => {
+      const oldTodo = state.todos.find(function (t) { return t.id === data.id })
+      const newTodo = extend(oldTodo, data)
+      send('replaceTodo', newTodo, done)
+      log.append({
+        action: 'update-todo',
+        value: data
+      })
+    },
+    remoteDeleteTodo: (state, data, send, done) => {
+      send('removeTodo', data, done)
+    },
+    deleteTodo: (state, data, send, done) => {
+      send('removeTodo', data, done)
+      log.append({
+        action: 'delete-todo',
+        value: data
+      })
+    },
+    importJSON: (state, json, send, done) => {
+      send('closeImportExport', json, done)
+      JSON.parse(json).todos.map(function (t) {
+        send('receiveNewTodo', t, done)
+        log.append({
+          action: 'create-todo',
+          value: t
+        })
       })
     }
-
-    closeBtn.classList.add('hidden')
-    importBtn.classList.add('hidden')
-    jsonExport.classList.add('hidden')
-    jsonImport.classList.add('hidden')
-  })
-
-  closeBtn.addEventListener('click', function () {
-    closeBtn.classList.add('hidden')
-    importBtn.classList.add('hidden')
-    jsonExport.classList.add('hidden')
-    jsonImport.classList.add('hidden')
-  })
-}
-
-// note that "remote" in this case means from the hyperlog.
-// we might have appended to the hyperlog ourselves, but we don't want to care.
-function handleRemoteData (data) {
-  console.log('remote data: ', data)
-
-  if (data.value.action === 'create-todo') {
-
-    // create a todo object
-    var todo = {
-      id: data.value.value.id,
-      text: data.value.value.text,
-      done: false,
-      prioritized: true
-    }
-
-    // add todo to the app state object
-    todos.push(todo)
-
-    // then do the dom addition
-    remoteCreateTodo(data.value.value)
-
-  } else if (data.value.action === 'delete-todo') {
-
-    // remove it from app state object
-    var todo = todos.find(function (t) {return t.id === data.value.value.id})
-    var idx = todos.indexOf(todo)
-    todos.splice(idx, 1)
-
-    // then do the dom removal
-    remoteDeleteTodo(data.value.value.id)
-
-  } else if (data.value.action === 'update-todo') {
-
-    // update it from the app state object
-    var todo = todos.find(function (t) {return t.id === data.value.value.id})
-    if (data.value.value.hasOwnProperty('prioritized')) {
-      todo.prioritized = data.value.value.prioritized
-    } else if (data.value.value.hasOwnProperty('done')) {
-      todo.done = data.value.value.done
-    } else if (data.value.value.hasOwnProperty('text')) {
-      todo.text = data.value.value.text
-    }
-
-    // then do the dom update
-    remoteUpdateTodo(data.value.value)
-
   }
-}
+})
 
-// user wants to update a todo. append this action to the hyperlog
-function handleUpdateTodo (e) {
-  var todoEl = e.target.parentElement
-  var id = todoEl.dataset.id
+const view = (state, prev, send) => {
+  function todoItem (todo) {
+    return html`
+    <div class="todo-item" data-id=${todo.id}>
+      <div class="toggle-done" onclick=${onToggleDone}></div>
+      <div class="toggle-priority ${todo.prioritized ? 'arrow-down' : 'arrow-up'}" onclick=${onTogglePrioritized}></div>
+      <textarea class="todo-text ${todo.done ? 'done' : ''}" onkeyup=${onChangeTodo}>${todo.text}</textarea>
+      <div class="delete-todo" onclick=${onDeleteTodo}>x</div>
+    </div>`
+  } 
+  return html`
+    <div onload=${() => send('init')}>
+      <div id="inputContainer">
+        <textarea id="todoInput" placeholder="new todo" onkeyup=${onNewTodo}></textarea>
+        <div class="instructions">
+        ctrl-enter to add / edit todo.
+        <button class="action" id="openExportBtn" onclick=${onExport}>export</button>
+        to export your todos to JSON.
+        <button class="action" id="openImportBtn" onclick=${onImport}>import</button>
+        your todos via JSON.
+        </div>
+      </div>
+      <div id="todoListContainer">
+        <div id="todoList">
+          ${state.todos.map((todo, index) => {
+            return todo.prioritized ? todoItem(todo) : ''
+          })}
+        </div>
+      </div>
+      <div id="todoListSomeday">
+        ${state.todos.map((todo, index) => {
+          return todo.prioritized ? '' : todoItem(todo)
+        })}
+      </div>
+      <span id="appInfoSpan" class="instructions">
+      copy this link to replicate this app:
+      <a id="appInfo"
+         href=${window.location.origin + '?signalhub=' + signalhub + '&' + 'key=' + key + '&' + 'db=' + (prompt || searchObj.db)}>
+        ${'signalhub: "' + signalhub + '" | app key: "' + key + '" | db id: "' + (prompt || searchObj.db) + '"'}
+      </a>
+      </span>
+      <div id="peerNum"># of peers: (${state.peerNum})</div>
+      <button id="importBtn" class="${state.importVisible ? '' : 'hidden'}" onclick=${onImportJSON}>import</button>
+      <button id="closeBtn" class="${state.exportVisible || state.importVisible ? '' : 'hidden'}" onclick=${onCloseImportExport}>x</button>
+      <textarea id="jsonExport" class="jsonTextArea ${state.exportVisible ? '' : 'hidden'}" rows="8" cols="40">${JSON.stringify({todos: state.todos})}</textarea>
+      <textarea id="jsonImport" class="jsonTextArea ${state.importVisible ? '' : 'hidden'}" rows="8" cols="40"></textarea>
+    </div>`
 
-  if (e.keyCode === 13) {
-    if (e.ctrlKey) {
-      e.target.value += '\n'
-      return
-    } else {
-      // removing the stray newline
-      e.target.value = e.target.value.substring(0, e.target.value.length - 1)
-    }
+  function onImport (e) {
+    send('toggleImport')
+  }
 
-    var todo = todos.find(function (t) {return t.id === id})
-    todo.text = e.target.value
+  function onExport (e) {
+    send('toggleExport')
+  }
 
-    // append the action to the hyperlog
-    log.append({
-      action: 'update-todo',
-      value: {
-        id: id,
-        text: todo.text
-      }
+  function onCloseImportExport (e) {
+    send('closeImportExport')
+  }
+
+  function onImportJSON (e) {
+    const importedTodos = document.querySelector('#jsonImport')
+    send('importJSON', importedTodos.value)
+  }
+
+  function onToggleDone (e) {
+    const id = e.target.parentElement.dataset.id
+    const oldTodo = state.todos.find(function (t) { return t.id === id })
+    send('updateTodo', {
+      id: oldTodo.id,
+      done: !oldTodo.done
     })
-
-    e.target.scrollTop = 0
-    e.target.blur()
   }
-}
 
-// user wants to create a todo. append this action to the hyperlog
-function handleCreateTodo (e) {
-  if (e.keyCode === 13) {
-    if (e.ctrlKey) {
-      e.target.value += '\n'
-      return
-    }
-
-    // create a todo object
-    var todo = {
-      id: generateId(),
-      text: e.target.value.substring(0, e.target.value.length - 1), // removing the stray newline
-      done: false,
-      prioritized: true
-    }
-
-    // add todo to the app state object
-    todos.push(todo)
-
-    // append the action to the hyperlog
-    log.append({
-      action: 'create-todo',
-      value: todo
+  function onTogglePrioritized (e) {
+    const id = e.target.parentElement.dataset.id
+    const oldTodo = state.todos.find(function (t) { return t.id === id })
+    send('updateTodo', {
+      id: oldTodo.id,
+      prioritized: !oldTodo.prioritized
     })
-
-    // clear the input field
-    todoInput.value = ''
   }
-}
 
-// user wants toggle the priority of a todo. append this action to the hyperlog
-function handleTogglePriority (e) {
-  var todoEl = e.target.parentElement.parentElement
-  var id = todoEl.dataset.id
-
-  // update it from the app state object
-  var todo = todos.find(function (t) {return t.id === id})
-  todo.prioritized = !todo.prioritized
-
-  // append the action to the hyperlog
-  log.append({
-    action: 'update-todo',
-    value: {
-      id: id,
-      prioritized: todo.prioritized
-    }
-  })
-
-  return true
-}
-
-// user wants to set a todo to done. append this action to the hyperlog
-function handleToggleDone (e) {
-  var todoEl = e.target.parentElement
-
-  var textEl
-  for (var x = 0; x < todoEl.children.length; x++) {
-    if (todoEl.children[x].classList.contains('todo-text')) {
-      textEl = todoEl.children[x]
-      break
+  function onChangeTodo (e) {
+    const input = e.target
+    if (e.keyCode === 13 && e.ctrlKey) {
+      send('updateTodo', {
+        id: e.target.parentElement.dataset.id,
+        text: input.value
+      })
+      e.target.scrollTop = 0
+      e.target.blur()
     }
   }
 
-  // update it from the app state object
-  var todo = todos.find(function (t) {return t.id === todoEl.dataset.id})
-  todo.done = !todo.done
-
-  // append the action to the hyperlog
-  log.append({
-    action: 'update-todo',
-    value: {
-      id: todo.id,
-      done: todo.done
-    }
-  })
-
-  return true
-}
-
-// user wants to delete a todo. append this action to the hyperlog
-function handleDeleteTodo (e) {
-  var id = e.target.parentElement.dataset.id
-
-  // remove it from app state object
-  var todo = todos.find(function (t) {return t.id === id})
-  var idx = todos.indexOf(todo)
-  todos.splice(idx, 1)
-
-  // append the action to the hyperlog
-  log.append({
-    action: 'delete-todo',
-    value: {
-      id: id
-    }
-  })
-
-  return true
-}
-
-// returns the DOM element with the id matching the argument
-function findTodo (id) {
-  var allTodos = document.querySelectorAll('.todo-item')
-  for (var x = 0; x < allTodos.length; x++) {
-    if (allTodos[x].dataset.id === id) {
-      return allTodos[x]
-    }
+  function onDeleteTodo (e) {
+    send('deleteTodo', e.target.parentElement.dataset.id)
   }
-  return null
-}
 
-// perform the DOM manipulations
-function remoteCreateTodo (opts) {
-  var todo = document.createElement('div')
-  todo.classList.add('todo-item')
-  todo.dataset.id = opts.id
-  var toggleDone = document.createElement('div')
-  toggleDone.classList.add('toggle-done')
-  toggleDone.addEventListener('click', handleToggleDone)
-  var todoText = document.createElement('textarea')
-  todoText.classList.add('todo-text')
-  todoText.value = opts.text
-  todoText.addEventListener('keyup', handleUpdateTodo)
-  var togglePriority = document.createElement('div')
-  togglePriority.classList.add('toggle-priority')
-  togglePriority.classList.add('arrow-down')
-  togglePriority.addEventListener('click', handleTogglePriority)
-  var priorityContainer = document.createElement('div')
-  priorityContainer.classList.add('priority-container')
-  priorityContainer.appendChild(togglePriority)
-  var deleteTodo = document.createElement('div')
-  deleteTodo.classList.add('delete-todo')
-  deleteTodo.innerHTML = '×'
-  deleteTodo.addEventListener('click', handleDeleteTodo)
-
-  todo.appendChild(toggleDone)
-  todo.appendChild(priorityContainer)
-  todo.appendChild(todoText)
-  todo.appendChild(deleteTodo)
-
-  opts.prioritized ? todoList.appendChild(todo) : todoListSomeday.appendChild(todo)
-}
-
-function remoteDeleteTodo (id) {
-  var todo = findTodo(id)
-  if (todo.parentElement === todoList) {
-    todoList.removeChild(todo)
-  } else {
-    todoListSomeday.removeChild(todo)
-  }
-}
-
-function remoteUpdateTodo (opts) {
-  var todo = findTodo(opts.id)
-  if (opts.hasOwnProperty('prioritized')) {
-    if (opts.prioritized) {
-      todoList.appendChild(todo)
-    } else {
-      todoListSomeday.appendChild(todo)
-    }
-  } else if (opts.hasOwnProperty('done')) {
-    var textEl
-    for (var x = 0; x < todo.children.length; x++) {
-      if (todo.children[x].classList.contains('todo-text')) {
-        textEl = todo.children[x]
-        break
+  function onNewTodo (e) {
+    const input = e.target
+    if (e.keyCode === 13 && e.ctrlKey) {
+      const todo = {
+        id: utils.generateId(),
+        text: input.value,
+        done: false,
+        prioritized: true
       }
+      send('addTodo', todo)
+      input.value = ''
     }
-    if (opts.done) {
-      textEl.classList.add('done')
-    } else {
-      textEl.classList.remove('done')
-    }
-  } else if (opts.hasOwnProperty('text')) {
-    var textEl
-    for (var x = 0; x < todo.children.length; x++) {
-      if (todo.children[x].classList.contains('todo-text')) {
-        textEl = todo.children[x]
-        break
-      }
-    }
-    textEl.value = opts.text
   }
 }
+
+app.router([
+  ['/', view]
+])
+
+const tree = app.start()
+document.body.appendChild(tree)

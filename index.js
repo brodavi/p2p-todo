@@ -7,6 +7,7 @@ const choo = require('choo')
 const html = require('choo/html')
 const app = choo()
 const utils = require('./utils.js')
+const Todo = require('./todo-widget.js')
 
 const searchObj = queryString.parse(window.location.search)
 
@@ -44,7 +45,6 @@ function handleRemoteData (state, data, send, done) {
   if (data.log === log.id) {
     return
   }
-
          if (data.value.action === 'create-todo') {
     send('remoteAddTodo', data.value.value, done)
   } else if (data.value.action === 'delete-todo') {
@@ -120,10 +120,17 @@ app.model({
       const oldTodo = state.todos.find(function (t) { return t.id === data.id })
       const newTodo = extend(oldTodo, data)
       send('replaceTodo', newTodo, done)
-      log.append({
-        action: 'update-todo',
-        value: data
-      })
+      if (data.text === undefined &&
+          data.date === undefined &&
+          data.tags === undefined &&
+          data.done === undefined &&
+          data.prioritized === undefined) {
+      } else {
+        log.append({
+          action: 'update-todo',
+          value: data
+        })
+      }
     },
     remoteDeleteTodo: (state, data, send, done) => {
       send('removeTodo', data, done)
@@ -138,6 +145,8 @@ app.model({
     importJSON: (state, json, send, done) => {
       send('closeImportExport', json, done)
       JSON.parse(json).todos.map(function (t) {
+        if (!t.date) t.date = new Date()
+        if (!t.tags) t.tags = []
         send('receiveNewTodo', t, done)
         log.append({
           action: 'create-todo',
@@ -148,38 +157,45 @@ app.model({
   }
 })
 
+// const datepickerInstance = Datepicker()
+const todoInstance = Todo()
+
 const view = (state, prev, send) => {
-  function todoItem (todo) {
-    return html`
-    <div class="todo-item" data-id=${todo.id}>
-      <div class="toggle-done" onclick=${onToggleDone}></div>
-      <div class="toggle-priority ${todo.prioritized ? 'arrow-down' : 'arrow-up'}" onclick=${onTogglePrioritized}></div>
-      <textarea class="todo-text ${todo.done ? 'done' : ''}" onkeyup=${onChangeTodo}>${todo.text}</textarea>
-      <div class="delete-todo" onclick=${onDeleteTodo}>x</div>
-    </div>`
-  } 
   return html`
     <div onload=${() => send('init')}>
-      <div id="inputContainer">
-        <textarea id="todoInput" placeholder="new todo" onkeyup=${onNewTodo}></textarea>
-        <div class="instructions">
-        ctrl-enter to add / edit todo.
-        <button class="action" id="openExportBtn" onclick=${onExport}>export</button>
+      <div id="newTodoContainer">
+        ${Todo()({
+          onSaveTodo: onSaveTodo
+        })}
+      </div>
+      <div id="importExportContainer">
+        <button class="action" onclick=${onExport}>export</button>
         to export your todos to JSON.
-        <button class="action" id="openImportBtn" onclick=${onImport}>import</button>
+        <button class="action" onclick=${onImport}>import</button>
         your todos via JSON.
-        </div>
       </div>
       <div id="todoListContainer">
         <div id="todoList">
           ${state.todos.map((todo, index) => {
-            return todo.prioritized ? todoItem(todo) : ''
+            return todo.prioritized ? Todo()({
+              todo: todo,
+              onSaveTodo: onSaveTodo,
+              onDeleteTodo: onDeleteTodo,
+              onToggleDone: onToggleDone,
+              onTogglePrioritized: onTogglePrioritized
+            }) : ''
           })}
         </div>
       </div>
       <div id="todoListSomeday">
         ${state.todos.map((todo, index) => {
-          return todo.prioritized ? '' : todoItem(todo)
+          return todo.prioritized ? '' : Todo()({
+            todo: todo,
+            onSaveTodo: onSaveTodo,
+            onToggleDone: onToggleDone,
+            onDeleteTodo: onDeleteTodo,
+            onTogglePrioritized: onTogglePrioritized
+          })
         })}
       </div>
       <span id="appInfoSpan" class="instructions">
@@ -231,33 +247,77 @@ const view = (state, prev, send) => {
     })
   }
 
-  function onChangeTodo (e) {
-    const input = e.target
-    if (e.keyCode === 13 && e.ctrlKey) {
-      send('updateTodo', {
-        id: e.target.parentElement.dataset.id,
-        text: input.value
-      })
-      e.target.scrollTop = 0
-      e.target.blur()
-    }
-  }
-
   function onDeleteTodo (e) {
-    send('deleteTodo', e.target.parentElement.dataset.id)
+    send('deleteTodo', e.target.parentElement.parentElement.dataset.id)
   }
 
-  function onNewTodo (e) {
-    const input = e.target
-    if (e.keyCode === 13 && e.ctrlKey) {
-      const todo = {
+  function onSaveTodo (e) {
+    const id = e.target.parentElement.parentElement.dataset.id === "0" ? null : e.target.parentElement.parentElement.dataset.id
+    const oldTodo = id ? state.todos.find(function (t) { return t.id === id }) : null
+
+    const children = e.target.parentElement.parentElement.children
+    var todoInput, tagsInput, daySelect, monthSelect, yearSelect
+
+    for (var x = 0; x < children.length; x++) {
+      if (children[x].classList.contains('todo-text')) {
+        todoInput = children[x]
+      }
+      if (children[x].classList.contains('date-selectors')) { 
+        const subchildren = children[x].children
+        for (var y = 0; y < subchildren.length; y++) {
+          if (subchildren[y].classList.contains('date-select')) {
+            dateSelect = subchildren[y]
+          }
+          if (subchildren[y].classList.contains('month-select')) {
+            monthSelect = subchildren[y]
+          }
+          if (subchildren[y].classList.contains('year-select')) {
+            yearSelect = subchildren[y]
+          }
+          if (subchildren[y].classList.contains('tags-input')) {
+            tagsInput = subchildren[y]
+          }
+        }
+      }
+    }
+
+    const date = new Date(monthSelect.value + ' ' + dateSelect.value + ' ' + yearSelect.value)
+
+    const newTodo = {
+      text: todoInput.value,
+      date: date,
+      tags: tagsInput.value.split(' ')
+    }
+
+    var diff = {
+      id: id
+    }
+
+    if (oldTodo) {
+      if (newTodo.text !== oldTodo.text) {
+        diff.text = newTodo.text
+      }
+      if (newTodo.date.valueOf() !== oldTodo.date.valueOf()) {
+        diff.date = newTodo.date
+      }
+      if (newTodo.tags.reduce(function (acc, i, idx) {
+        const different = i !== oldTodo.tags[idx]
+        return different || acc
+      }, false)) {
+        diff.tags = newTodo.tags
+      }
+      todoInput.value = ''
+      tagsInput.value = ''
+      send('updateTodo', diff)
+    } else {
+      diff = extend(newTodo, {
         id: utils.generateId(),
-        text: input.value,
         done: false,
         prioritized: true
-      }
-      send('addTodo', todo)
-      input.value = ''
+      })
+      todoInput.value = ''
+      tagsInput.value = ''
+      send('addTodo', diff)
     }
   }
 }

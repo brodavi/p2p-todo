@@ -1,39 +1,45 @@
-textarea {
-  resize: none;
+button, select {
+  font-size: 0.6em;
 }
 
-#inputContainer {
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
-
-#todoInput {
-  display: block;
-  font-size: 30px;
-  width: 40%;
+#newTodoContainer {
   margin: 0 auto;
-  padding-left: 10px;
-  border-radius: 4px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  width: 60%;
 }
 
-@media all and (max-width: 700px) {
-  #todoInput {
-    width: 90%;
-  }
-}
-
-.instructions {
-  margin-top: 10px;
+#importExportContainer {
   text-align: center;
+  margin-top: 10px;
+  margin-bottom: 15px;
   font-size: 10px;
-  color: #222222;
 }
 
-.instructions .action {
-  color: #5555ff;
-  cursor: pointer;
+#importExportContainer button {
+  font-size: 1em;
 }
 
+#newTodoContainer .todo-item {
+  width: 95%;
+  border: 2px solid #ddeeff;
+  border-radius: 3px;
+  padding: 5px;
+  background-color: #ffffff;
+  color: #554433;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+#newTodoContainer .todo-item .todo-text {
+  width: 95%;
+  font-size: 25px;
+}
+
+#newTodoContainer .todo-item .saveDeleteContainer button {
+  font-size: 17px;
+  margin: 15px auto;
+}
 /* the 'active' todos live here */
 
 #todoList {
@@ -50,13 +56,18 @@ textarea {
   #todoList {
     width: 90%;
   }
+  #newTodoContainer {
+    width: 90%;
+  }
 }
 
 #todoList .todo-item {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: space-between;
 
-  font-size: 25px;
   width: 95%;
   border: 2px solid #ddeeff;
   border-radius: 3px;
@@ -68,49 +79,20 @@ textarea {
 }
 
 .todo-text {
-  width: 85%;
-  overflow: auto;
+  width: 60%;
+  font-size: 20px;
 }
 
 .todo-text.done {
   text-decoration: line-through;
 }
 
-#todoList .todo-item .toggle-done {
-  width: 25px;
-  height: 25px;
-  border: 2px solid #aabbcc;
-  border-radius: 30px;
-  background-color: #f0f0ff;
-  margin-right: 10px;
+.saveDeleteContainer {
+  display: flex;
 }
 
-#todoList .todo-item .priority-container {
-  width: 35px;
-  height: 35px;
-  margin-right: 5px;
-}
-
-#todoList .todo-item .toggle-priority {
-  margin-top: 5px;
-  margin-right: 5px;
-  width: 0;
-  height: 0;
-  border-left: 15px solid transparent;
-  border-right: 15px solid transparent;
-  border-top: 20px solid #aabbcc;
-}
-
-#todoList .todo-item .delete-todo {
-  padding-right: 5px;
-  padding-left: 5px;
-  font-size: 30px;
-  margin-left: auto;
-}
-
-.delete-todo:hover {
-  cursor: pointer;
-  opacity: 0.6;
+.saveDeleteContainer button {
+  height: 100%;
 }
 
 /* the 'inactive' todos live here */
@@ -131,6 +113,7 @@ textarea {
 #todoListSomeday .todo-item {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
 
   font-size: 15px;
   width: 200px;
@@ -144,6 +127,10 @@ textarea {
   animation-duration: 1s;
 }
 
+#todoListSomeday .todo-item .todo-text {
+  width: 95%;
+}
+
 @media all and (max-width: 450px) {
   #todoListSomeday .todo-item {
     width: 90%;
@@ -152,29 +139,6 @@ textarea {
 
 #todoListSomeday .todo-item .toggle-done {
   display: none;
-}
-
-#todoListSomeday .todo-item .priority-container {
-  width: 15px;
-  height: 15px;
-  margin-right: 7px;
-  margin-left: 5px;
-}
-
-#todoListSomeday .todo-item .toggle-priority {
-  margin-top: 2px;
-  width: 0; 
-  height: 0; 
-  border-left: 7px solid transparent;
-  border-right: 7px solid transparent;
-  border-bottom: 10px solid #DDFFBB;
-}
-
-#todoListSomeday .todo-item .delete-todo {
-  padding-right: 2px;
-  padding-left: 2px;
-  font-size: 15px;
-  margin-left: auto;
 }
 
 #appInfoSpan {
@@ -209,9 +173,11 @@ textarea {
 
 .jsonTextArea {
   position: fixed;
-  top: 0px;
-  width: 100%;
-  height: 100%;
+  overflow: scroll;
+  left: 5%;
+  top: 5%;
+  width: 90%;
+  height: 90%;
   background-color: #ccaaff;
   color: #332211;
 }

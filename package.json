@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/brodavi/p2p-todo#readme",
   "dependencies": {
+    "cache-element": "^2.0.1",
     "choo": "^4.1.0",
     "level-browserify": "^1.1.0",
     "memdb": "^1.3.1",

@@ -22440,6 +22440,7 @@ const view = (state, prev, send) => {
     <div onload=${() => send('init')}>
       <div id="inputContainer">
         <textarea id="todoInput" placeholder="new todo" onkeyup=${onNewTodo}></textarea>
+        <input class="datepicker" type="text" placeholder="pick a date" />
         <div class="instructions">
         ctrl-enter to add / edit todo.
         <button class="action" id="openExportBtn" onclick=${onExport}>export</button>
